@@ -72,7 +72,7 @@ greater than 1")
     #on excel it is +2
     startingRow=0
     EndingRow= int(sys.argv[2])+1
-    chunkSize = int((EndingRow-startingRow)/numProcesses)
+    chunkSize = int((EndingRow-startingRow)/numProcesses) #number of rows per process
     #if chunkSize>50000000 or chunkSize<1000000: #keep within RAM size
     chunkSize = 1000000
     REPS = chunkSize
@@ -83,7 +83,7 @@ greater than 1")
         start = id * chunkSize
         stop = start + chunkSize
         # do the work within the range set aside for this process
-        x = readInData(startingRow+start, startingRow + stop, fileName)
+        x = readInData(startingRow+start, startingRow + stop, fileName) #starting row is the offset
     else:
         x = 0.0
         # cannot break into equal chunks; one process reports the error
@@ -104,7 +104,7 @@ and less than or equal to {}.".format(REPS))
     partialMax = np.zeros(1)
     partialMax[0] = max(x)
     arrayPartialMedians = np.zeros(numProcesses)
-    arrayPartialLQ = np.zeros(numProcesses)
+    arrayPartialLQ = np.zeros(numProcesses) #confusing calling this partial ?????????????????????????????????????????????
     arrayPartialUQ = np.zeros(numProcesses)
     arrayPartialMin = np.zeros(numProcesses)
     arrayPartialMax = np.zeros(numProcesses)
