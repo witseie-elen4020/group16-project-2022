@@ -1,100 +1,123 @@
 import pandas as pd
-pd.set_option('display.float_format', '{:.10f}'.format)
 import numpy as np
 from mpi4py import MPI
 import sys
+import seaborn
+import datetime
 
 comm = MPI.COMM_WORLD
-id = comm.Get_rank()            #number of the process running the code
+rank = comm.Get_rank()            #number of the process running the code
 numProcesses = comm.Get_size()  #total number of processes running
-myHostName = MPI.Get_processor_name()  #machine name running the code
-        
-def chunk_preprocessing(df_chunk):
+myHostName = MPI.Get_processor_name()  #machine name running  the code
+end_time = 0.0 
+pd.set_option('display.float_format', '{:.10f}'.format)
+ 
+def exportBoxAndWhisker(Min, q1, q2, q3, Max, starting, ending, fileName, numProcesses):
+    stats = [Min, q1, q2, q3, Max]
+    bw = seaborn.boxplot(data=stats, orient="h")
+    newFileName = fileName.replace(".csv", "") 
+    x = newFileName.rfind("/") 
+    if len(newFileName)>x:
+          newFileName = newFileName[0:0:] + newFileName[x+1::]
+    bw.set(title="Box Plot between  {} and {} \n with {} processes for {}.csv".format(starting, ending, numProcesses, newFileName))     
+    bw.get_figure().savefig('scripts_results/{}.png'.format(newFileName))
+     
+def chunkPreprocessing(df_chunk):
     df_chunk.drop(df_chunk.iloc[:,[0,1]],axis=1,inplace=True)
     return df_chunk
+
 def convertToMagnitudes(df_chunk):
     df_chunk_magnitudes = np.sqrt((df_chunk.iloc[:,0]*df_chunk.iloc[:,0])+ (df_chunk.iloc[:,1]*df_chunk.iloc[:,1])+ (df_chunk.iloc[:,2]*df_chunk.iloc[:,2]))
     return df_chunk_magnitudes
 
-
 def readInData(start, stop, fileName):
     chunk_mag_list = []
     startingRow=start
-#on excel it is +2
-    EndingRow= stop
-    chunkSize = int((EndingRow-startingRow)/numProcesses)
-    #if chunkSize>50000000 or chunkSize<1000000: #keep within RAM size
-    chunkSize = 1000000
-    #ensures it will fit into Ram
-    chunks = pd.read_csv(fileName, skiprows =lambda x: x not in range(startingRow, EndingRow ),chunksize=chunkSize)
-    
+    endingRow= stop
+    chunkSize = int((endingRow-startingRow)/numProcesses)
+    if chunkSize>20000000:
+        chunkSize = 20000000  #ensures it will fit into Ram
+    chunks = pd.read_csv(fileName, skiprows =lambda x: x not in range(startingRow, endingRow ),chunksize=chunkSize)
+    totalProcessingTime = 0.0
+    i =0 
+    start_time = 0.0
+    wt4 = 0.0
+    wt5 = 0.0
     for df_chunk in chunks:
+        if i ==0: #obtaining the start and end time from the UNIX time stamp
+            if rank==0:
+                start_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')
+        #if rank == (numProcesses-1):        
+        end_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[-1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')
         df_chunk_filtered = df_chunk
-        chunk_preprocessing(df_chunk)# remove time column
+        if rank==0:
+            wt4 =MPI.Wtime()
+        chunkPreprocessing(df_chunk)
         df_chunk_magnitudes =convertToMagnitudes(df_chunk_filtered)
-
-
-        # Once the magnitudes for a chunk are done, append the magnitutes to list
-        chunk_mag_list.append(df_chunk_magnitudes)
-
-    # concat the list of magnitudes into dataframe 
-    df_concat = pd.concat(chunk_mag_list)
-    #convert into np array 
-    magData=np.array(df_concat)
-    return magData
+        if rank==0:
+            wt5 =MPI.Wtime()
+        chunk_mag_list.append(df_chunk_magnitudes) # Once the magnitudes for a chunk are done, append the magnitutes to list
+        timeForRound = wt5-wt4
+        totalProcessingTime += timeForRound
+        i+=1
+ 
+    df_concat = pd.concat(chunk_mag_list) # concantenate the list of magnitudes into dataframe
+    magData=np.array(df_concat) #convert into np array 
+    return magData, totalProcessingTime, start_time, end_time 
   
-    
+def outliers(LQ,UQ, MINreal,MAXreal):
+    IQR = UQ-LQ
+    Min = LQ - 1.5*IQR #with exclusion of outliers
+    if Min<MINreal:
+        Min = MINreal
+    Max = UQ + 1.5*IQR
+    if Max>MAXreal:
+        Max = MAXreal  
+    return IQR, Min, Max  
 
-    
+def printResults(med,LQ,UQ,IQR,Max,Min):
+      print('Median:', med)
+      print('LQ', LQ)
+      print('UQ',UQ)
+      print('IQR',IQR)
+      print('MAX:', Max)
+      print('MIN', Min)
+
+def printTimes(wt0Start, wt1Start,wt1End,wt4Start,wt4End,wt0End,totalProcessingTime, start_time, end_time):
+      print('Time taken Reading IN (ms): ', (wt1End-wt1Start - totalProcessingTime)*1000)
+      print('Time taken for preprocessing, magnitude and numpy conversion(ms): ', (totalProcessingTime)*1000)
+      print('Time taken scatter, compute, gather (ms): ', (wt4End-wt4Start)*1000)
+      print('Time taken overall (ms): ', (wt0End-wt0Start)*1000)
+      print('Start time and End Time (GMT):', start_time, ' , ', end_time)
+      
 def main():
     
-    if numProcesses >= 1 :
-       # checkInput(id)
-
-        if id == 0:        # master
-            #master: get the command line argument
-            #fileName = input("Enter the csv file's name that contains the data for which you want statistics (gyroscope.csv, gravity.csv, accelerometer.csv):")
-            fileName = sys.argv[1]
-            wt1 = MPI.Wtime() 
-            wt2=0.0
-        else :
-            # worker: start with empty data
-            fileName = 'No data'
-            wt1 = 0.0
-            wt2=0.0
-        #initiate and complete the broadcast
-        fileName = comm.bcast(fileName, root=0)
-
-    else :
-        print("Please run this program with the number of processes \
-greater than 1")
-        
-    #on excel it is +2
+    if rank == 0:        
+        wt0Start = MPI.Wtime() #begin timing whole code
+    fileName = sys.argv[1]   
     startingRow=0
-    EndingRow= int(sys.argv[2])+1
-    chunkSize = int((EndingRow-startingRow)/numProcesses)
-    #if chunkSize>50000000 or chunkSize<1000000: #keep within RAM size
-    chunkSize = 1000000
-    REPS = chunkSize
-
-    if ((REPS % numProcesses) == 0 and numProcesses <= REPS):
-        # How much of the loop should a process work on?
-        chunkSize = int(REPS / numProcesses)
-        start = id * chunkSize
-        stop = start + chunkSize
+    endingRow= int(sys.argv[2])+1
+    rowsPerProcess = int((endingRow-startingRow)/numProcesses)   
+    if ((rowsPerProcess % numProcesses) == 0 and numProcesses <= rowsPerProcess):
+        rowsPerProcess = int(rowsPerProcess / numProcesses)
+        start = rank * rowsPerProcess
+        stop = start + rowsPerProcess
         # do the work within the range set aside for this process
-        x = readInData(startingRow+start, startingRow + stop, fileName)
+        if rank == 0:
+            wt1Start = MPI.Wtime()   #start reading in time
+        x, totalProcessingTime, start_time, end_time = readInData(startingRow+start, startingRow+stop, fileName)
+        if rank == 0:
+            wt1End = MPI.Wtime()
     else:
         x = 0.0
-        # cannot break into equal chunks; one process reports the error
-        if id == 0 :
-            print("Please run with number of processes divisible by \
-and less than or equal to {}.".format(REPS))
+        if rank == 0 :  # cannot break into equal chunks; one process reports the error
+            print("Must be run with number of processes divisible by \
+and less than or equal to {}.".format(rowsPerProcess))
     
-    #print('process {} has magData:'.format(id), x)
+    if rank ==0:
+            wt4Start = MPI.Wtime()
     partialMedian = np.zeros(1)
     partialMedian[0] = np.median(x)
-    #print('process {} has meidan:'.format(id), partialMedian[0])
     partialLQ = np.zeros(1)
     partialLQ[0] = np.quantile(x,0.25)
     partialUQ = np.zeros(1)
@@ -103,8 +126,8 @@ and less than or equal to {}.".format(REPS))
     partialMin[0] = min(x)
     partialMax = np.zeros(1)
     partialMax[0] = max(x)
-    arrayPartialMedians = np.zeros(numProcesses)
-    arrayPartialLQ = np.zeros(numProcesses)
+    arrayPartialMedians = np.zeros(numProcesses) # array of medians from each chunk 
+    arrayPartialLQ = np.zeros(numProcesses) 
     arrayPartialUQ = np.zeros(numProcesses)
     arrayPartialMin = np.zeros(numProcesses)
     arrayPartialMax = np.zeros(numProcesses)
@@ -114,29 +137,18 @@ and less than or equal to {}.".format(REPS))
     comm.Gatherv(partialUQ[0],arrayPartialUQ, root=0)
     comm.Gatherv(partialMin[0],arrayPartialMin, root=0)
     comm.Gatherv(partialMax[0],arrayPartialMax, root=0)
-    
-    if id ==0:
+    if rank ==0:
+        wt4End = MPI.Wtime() 
         med = np.median(arrayPartialMedians)
         LQ = np.quantile(arrayPartialLQ, 0.25)
         UQ = np.quantile(arrayPartialUQ, 0.75)
         MINreal = min(arrayPartialMin)
-        IQR = UQ-LQ
-        Min = LQ - 1.5*IQR #with exclusion of outliers
-        if Min<MINreal:
-                Min = MINreal
         MAXreal = max(arrayPartialMax)
-        Max = UQ + 1.5*IQR
-        if Max>MAXreal:
-                Max = MAXreal  
-
-        print('Median:', med)
-        print('LQ', LQ)
-        print('UQ',UQ)
-        print('IQR',IQR)
-        print('MAX:', Max)
-        print('MIN', Min)
-        wt2 = MPI.Wtime()
-        print('Time taken (ms): ', (wt2-wt1)*1000)
+        IQR, Min, Max = outliers(LQ,UQ, MINreal,MAXreal)
+        wt0End = MPI.Wtime()
+        printResults(med,LQ,UQ,IQR,Max,Min)
+        printTimes(wt0Start, wt1Start,wt1End,wt4Start,wt4End,wt0End,totalProcessingTime, start_time, end_time)
+        exportBoxAndWhisker(Min, LQ, med, UQ, Max, start_time, end_time, fileName,numProcesses)
     MPI.Finalize()
     exit()
 
