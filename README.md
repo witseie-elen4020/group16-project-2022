@@ -28,7 +28,7 @@ where 10 is the number of nodes you wish to run on (this can be changed). arg1 i
 
 This will output to the console: the calculated quantiles, minimum and maximum, as well as times taken for the code to run for each section of the code.
 
-It also produces a .png labeled as the file name that was processed. This png contains a boxplot as well as the time ranges from the UNIX stamps baSed on the number of lines requested.
+It also produces a .png labeled as the file name that was processed. This png contains a boxplot as well as the time ranges from the UNIX stamps based on the number of lines requested.
 
 For parrallelimport.py:
 
@@ -39,3 +39,9 @@ For parrallelimport.py:
  To run without the hostfile, simply run:
 
  ###### $ mpiexec -n 4 python3 -m mpi4py src/main.py arg1 arg2
+ 
+ 
+ ###Group member contributions:
+ Rael: Implementation B, analysis, report writing
+ Ben: Implementation A, discussion, report writing
+ Gia: assisted with both implementations, results plotting and analysis, report writing
