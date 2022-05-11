@@ -41,7 +41,7 @@ For parrallelimport.py:
  ###### $ mpiexec -n 4 python3 -m mpi4py src/main.py arg1 arg2
  
  
- ### Group member contributions:
+ #### Group member contributions:
  Rael: Implementation B, analysis, report writing. 
- Ben: Implementation A, testing, report writing. 
+ Benjamin: Implementation A, testing, report writing. 
  Gia: assisted with both implementations, results plotting and analysis, report writing. 
