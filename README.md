@@ -18,11 +18,12 @@ Each batch file executes code for different sized files and different numbers of
 
 The batch files import csv files from the /data/elen4020/project directory. 99MB, 987MB and 4.9GB files are run for each code implementation, with iterations of 1,2,4,10 and 16 nodes each. To run all of these files may take several minutes. To run fewer of them, edit the RunAll.sh file and comment the batch file you do not want executed. Larger file sizes were tested but not included as it takes relatively long to run. 
 
+In this way mulitple files can be tested at once, as long as the number of overall nodes requested does not exceed 16.
 
 To run your own iteration of file and number of processes, either edit one of the bacth files, or use:
 For main.py:
 
- ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2
+ ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/parrallelimport.py arg1 arg2
 
 where 10 is the number of nodes you wish to run on (this can be changed). arg1 is the complete file path to the csv file you want processed and arg2 is the number of lines of the file you want processed. For a 1GB file, the number of lines is about 15000000. The number of lines and file size are proportional. You can enter a larger number than the file has and it will process the whole file, but if you want a porton of the file, enter a lower number of lines. 
 
