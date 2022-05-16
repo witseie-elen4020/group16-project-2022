@@ -24,9 +24,9 @@ To run your own iteration of file and number of processes, either edit one of th
 
 For main.py:
 
- ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2
+ ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2 arg3
 
-where 10 is the number of nodes you wish to run on (this can be changed). arg1 is the complete file path to the csv file you want processed and arg2 is the number of lines of the file you want processed. For a 1GB file, the number of lines is about 15000000. The number of lines and file size are proportional. You can enter a larger number than the file has and it will process the whole file, but if you want a porton of the file, enter a lower number of lines. 
+where 10 is the number of nodes you wish to run on (this can be changed). arg1 is the complete file path to the csv file you want processed, arg2 is the row you want to start from and arg3 is the row you want to end at. For a 1GB file, the number of lines is about 15000000. The number of lines and file size are proportional. You can enter a larger number than the file has and it will process the whole file, but if you want a porton of the file, enter a lower number of lines. 
 
 This will output to the console: the calculated quantiles, minimum and maximum, as well as times taken for the code to run for each section of the code.
 
@@ -34,7 +34,7 @@ It also produces a .png labeled as the file name that was processed. This png co
 
 For parrallelimport.py:
 
- ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/parrallelimport.py arg1 arg2
+ ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/parrallelimport.py arg1 arg2 arg3
 
  where the arguments are the same as explained for main.py
 
@@ -44,9 +44,9 @@ For main.py:
  ### $ mpiexec -n 4 python3 -m mpi4py src/main.py arg1 arg2
  
 For parrallelimport.py:
- ### $ mpiexec -n 4 python3 -m mpi4py src/parrallelimport.py arg1 arg2
+ ### $ mpiexec -n 4 python3 -m mpi4py src/parrallelimport.py arg1 arg2 arg3
  
  #### Group member contributions:
  Rael: Implementation B, analysis, report writing. 
  Benjamin: Implementation A, testing, report writing. 
- Gia: assisted with both implementations, results plotting and analysis, report writing. 
+ Gia: assisted with both implementations, results plotting and analysis, report writing.
