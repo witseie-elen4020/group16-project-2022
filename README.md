@@ -40,10 +40,10 @@ For parrallelimport.py:
 
  To run without the hostfile, simply run:
 
-For main.py
+For main.py:
  ###### $ mpiexec -n 4 python3 -m mpi4py src/main.py arg1 arg2
  
-For parrallelimport.py
+For parrallelimport.py:
  ###### $ mpiexec -n 4 python3 -m mpi4py src/parrallelimport.py arg1 arg2
  
  #### Group member contributions:
