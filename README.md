@@ -21,6 +21,7 @@ The batch files import csv files from the /data/elen4020/project directory. 99MB
 In this way mulitple files can be tested at once, as long as the number of overall nodes requested does not exceed 16.
 
 To run your own iteration of file and number of processes, either edit one of the bacth files, or use:
+
 For main.py:
 
  ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2
@@ -39,8 +40,11 @@ For parrallelimport.py:
 
  To run without the hostfile, simply run:
 
+For main.py
  ###### $ mpiexec -n 4 python3 -m mpi4py src/main.py arg1 arg2
  
+For parrallelimport.py
+ ###### $ mpiexec -n 4 python3 -m mpi4py src/parrallelimport.py arg1 arg2
  
  #### Group member contributions:
  Rael: Implementation B, analysis, report writing. 
