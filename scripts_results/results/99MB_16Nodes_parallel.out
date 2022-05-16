@@ -1,0 +1,13 @@
+You requested too many lines therefore stopped at line 1051445
+Your row number has been rounded down to ensure all processes share equal work loads to maximise efficiency
+Median: 1.5374768568983472
+LQ 1.100079380975658
+UQ 2.028130130239188
+IQR 0.9280507492635299
+MAX: 3.4202062541344826
+MIN 0.021333803257432504
+Time taken Reading IN (ms):  693.0336952209473
+Time taken for preprocessing, magnitude and numpy conversion(ms):  25.247573852539062
+Time taken scatter, compute, gather (ms):  1327.359914779663
+Time taken overall (ms):  2046.0739135742188
+Start time and End Time (GMT): 2020-01-02 13:46:45  ,  2020-01-02 13:58:15

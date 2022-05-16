@@ -8,4 +8,4 @@
 #SBATCH --ntasks-per-node=1 # Request n cores or task per node
 
 # Run it!
-exec srun --mpi=pmi2 python3 -m mpi4py src/main.py /data/elen4020/project/large/TZEoeKWF.csv 1500000000
+exec srun --mpi=pmi2 python3 -m mpi4py src/main.py /data/elen4020/project/large/TZEoeKWF.csv 0 1500000000

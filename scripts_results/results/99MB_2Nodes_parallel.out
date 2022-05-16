@@ -1,0 +1,12 @@
+You requested too many lines therefore stopped at line 1051445
+Median: 1.5373849055385311
+LQ 1.1018384628827071
+UQ 2.025934025098916
+IQR 0.924095562216209
+MAX: 3.4120773684232297
+MIN 0.021333803257432504
+Time taken Reading IN (ms):  912.8768444061279
+Time taken for preprocessing, magnitude and numpy conversion(ms):  12.529850006103516
+Time taken scatter, compute, gather (ms):  526.3092517852783
+Time taken overall (ms):  1452.2159099578857
+Start time and End Time (GMT): 2020-01-02 13:46:45  ,  2020-01-02 15:18:45

@@ -4,9 +4,10 @@ from mpi4py import MPI
 import sys
 import seaborn
 import datetime
+import os 
 
 comm = MPI.COMM_WORLD
-rank = comm.Get_rank()            #number of the process running the code
+rank = comm.Get_rank()          #number of the process running the code
 numProcesses = comm.Get_size()  #total number of processes running
 myHostName = MPI.Get_processor_name()  #machine name running  the code
 end_time = 0.0 
@@ -32,10 +33,14 @@ def convertToMagnitudes(df_chunk):
 
 def readInData(start, stop, fileName):
     chunk_mag_list = []
-    print("I am process number{} and i have been allocated start={},stop={}".format(rank,start,stop ) )
     startingRow=start
     endingRow= stop
     chunkSize = int((endingRow-startingRow)/numProcesses)
+    if chunkSize<1:   
+        if rank==0:
+            print("Exiting as there are not enough rows for processes")
+        exit()
+      
     if chunkSize>20000000:
         chunkSize = 20000000  #ensures it will fit into Ram
     chunks = pd.read_csv(fileName, skiprows =lambda x: x not in range(startingRow, endingRow ),chunksize=chunkSize)
@@ -47,8 +52,7 @@ def readInData(start, stop, fileName):
     for df_chunk in chunks:
         if i ==0: #obtaining the start and end time from the UNIX time stamp
             if rank==0:
-                start_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')
-        #if rank == (numProcesses-1):        
+                start_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')     
         end_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[-1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')
         df_chunk_filtered = df_chunk
         if rank==0:
@@ -96,10 +100,24 @@ def main():
     if rank == 0:        
         wt0Start = MPI.Wtime() #begin timing whole code
     fileName = sys.argv[1]   
-    startingRow=0
-    endingRow= int(sys.argv[2])+1
+    fileSize=os.path.getsize(fileName)
+    bytesPerLine=68.2#71.569728
+    maxLines=int((fileSize/bytesPerLine)*0.70) #This is to ensure that the number of lines remains within the file size
+    startingRow=int(sys.argv[2])+1
+    endingRow= int(sys.argv[3])+1
+    if startingRow>maxLines :
+        if rank==0:
+            print("Starting row invalid")
+        exit()   
+    if endingRow>maxLines:
+        endingRow=maxLines
+        if rank == 0:
+            print("You requested too many lines therefore stopped at line {}".format(maxLines))
     totalNumRows = (endingRow-startingRow)   
-    if (numProcesses <= totalNumRows):
+    if totalNumRows%numProcesses!=0:
+        if rank==0:
+            print("Your row number has been rounded down to ensure all processes share equal work loads to maximise efficiency")
+    if (numProcesses < totalNumRows):
         rowsPerProcess = int(totalNumRows / numProcesses)
         start = rank * rowsPerProcess
         stop = start + rowsPerProcess
@@ -113,6 +131,7 @@ def main():
         x = 0.0
         if rank == 0 :  # cannot break into equal chunks; one process reports the error
             print("Must be run with more rows than processes")
+        exit()
     
     if rank ==0:
             wt4Start = MPI.Wtime()

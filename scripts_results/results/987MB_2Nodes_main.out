@@ -1,11 +1,11 @@
-Median: 1.538068027446732
-LQ 1.1011405364177334
-UQ 2.0268825796760503
-IQR 0.925742043258317
-MAX: 3.415495644563526
+Median: 1.538067888444926
+LQ 1.1011404742114994
+UQ 2.0268826652115917
+IQR 0.9257421910000923
+MAX: 3.41549595171173
 MIN 0.005419232768760214
-Time taken Reading IN (ms):  10671.106338500977
-Time taken for preprocessing, magnitude and numpy conversion(ms):  237.25223541259766
-Time taken scatter, compute, gather (ms):  1002.9950141906738
-Time taken overall (ms):  11911.949157714844
+Time taken Reading IN (ms):  11069.230318069458
+Time taken for preprocessing, magnitude and numpy conversion(ms):  230.0088405609131
+Time taken scatter, compute, gather (ms):  965.9960269927979
+Time taken overall (ms):  12265.913009643555
 Start time and End Time (GMT): 2019-12-21 02:13:58  ,  2019-12-22 07:23:58

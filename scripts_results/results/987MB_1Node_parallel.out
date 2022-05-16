@@ -1,11 +1,12 @@
-Median: 1.538068073649582
-LQ 1.1011623817608323
-UQ 2.026637654941476
-IQR 0.9254752731806439
-MAX: 3.414850564712442
+You requested too many lines therefore stopped at line 10617208
+Median: 1.5380677794090072
+LQ 1.1011623018971337
+UQ 2.0266376786153284
+IQR 0.9254753767181947
+MAX: 3.4148507436926203
 MIN 0.005419232768760214
-Time taken Reading IN (ms):  11049.758195877075
-Time taken for preprocessing, magnitude and numpy conversion(ms):  218.9769744873047
-Time taken scatter, compute, gather (ms):  1219.4361686706543
-Time taken overall (ms):  12488.704204559326
+Time taken Reading IN (ms):  11059.446334838867
+Time taken for preprocessing, magnitude and numpy conversion(ms):  195.32394409179688
+Time taken scatter, compute, gather (ms):  1367.344856262207
+Time taken overall (ms):  12636.492729187012
 Start time and End Time (GMT): 2019-12-21 02:13:58  ,  2019-12-22 07:23:58
