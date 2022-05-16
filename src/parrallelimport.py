@@ -32,6 +32,7 @@ def convertToMagnitudes(df_chunk):
 
 def readInData(start, stop, fileName):
     chunk_mag_list = []
+    print("I am process number{} and i have been allocated start={},stop={}".format(rank,start,stop ) )
     startingRow=start
     endingRow= stop
     chunkSize = int((endingRow-startingRow)/numProcesses)
@@ -97,9 +98,9 @@ def main():
     fileName = sys.argv[1]   
     startingRow=0
     endingRow= int(sys.argv[2])+1
-    rowsPerProcess = int((endingRow-startingRow)/numProcesses)   
-    if ((rowsPerProcess % numProcesses) == 0 and numProcesses <= rowsPerProcess):
-        rowsPerProcess = int(rowsPerProcess / numProcesses)
+    totalNumRows = (endingRow-startingRow)   
+    if (numProcesses <= totalNumRows):
+        rowsPerProcess = int(totalNumRows / numProcesses)
         start = rank * rowsPerProcess
         stop = start + rowsPerProcess
         # do the work within the range set aside for this process
@@ -111,8 +112,7 @@ def main():
     else:
         x = 0.0
         if rank == 0 :  # cannot break into equal chunks; one process reports the error
-            print("Must be run with number of processes divisible by \
-and less than or equal to {}.".format(rowsPerProcess))
+            print("Must be run with more rows than processes")
     
     if rank ==0:
             wt4Start = MPI.Wtime()

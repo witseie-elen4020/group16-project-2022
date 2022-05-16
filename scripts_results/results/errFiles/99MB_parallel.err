@@ -1,0 +1,41 @@
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/runpy.py", line 194, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/usr/local/lib/python3.8/dist-packages/mpi4py/__main__.py", line 7, in <module>
+    main()
+  File "/usr/local/lib/python3.8/dist-packages/mpi4py/run.py", line 198, in main
+    run_command_line(args)
+  File "/usr/local/lib/python3.8/dist-packages/mpi4py/run.py", line 47, in run_command_line
+    run_path(sys.argv[0], run_name='__main__')
+  File "/usr/lib/python3.8/runpy.py", line 265, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/usr/lib/python3.8/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/usr/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "src/parrallelimport.py", line 155, in <module>
+    main()
+  File "src/parrallelimport.py", line 108, in main
+    x, totalProcessingTime, start_time, end_time = readInData(startingRow+start, startingRow+stop, fileName)
+  File "src/parrallelimport.py", line 51, in readInData
+    end_time = datetime.datetime.utcfromtimestamp((df_chunk.iloc[-1,0])/1e9).strftime('%Y-%m-%d %H:%M:%S')
+  File "/home/group16/.local/lib/python3.8/site-packages/pandas/core/indexing.py", line 960, in __getitem__
+    return self.obj._get_value(*key, takeable=self._takeable)
+  File "/home/group16/.local/lib/python3.8/site-packages/pandas/core/frame.py", line 3613, in _get_value
+    return series._values[index]
+IndexError: index -1 is out of bounds for axis 0 with size 0
+application called MPI_Abort(MPI_COMM_WORLD, 1) - process 5
+slurmstepd: error: *** STEP 18662.0 ON jaguar8 CANCELLED AT 2022-05-16T11:59:41 ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+srun: error: jaguar11: task 3: Killed
+srun: error: jaguar10: task 2: Killed
+srun: error: jaguar13: task 5: Killed
+srun: error: jaguar12: task 4: Killed
+srun: error: jaguar9: task 1: Killed
+srun: error: jaguar8: task 0: Killed
+srun: error: jaguar17: task 9: Killed
+srun: error: jaguar14: task 6: Killed
+srun: error: jaguar16: task 8: Killed
+srun: error: jaguar15: task 7: Killed

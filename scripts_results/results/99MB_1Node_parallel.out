@@ -1,0 +1,11 @@
+Median: 1.5374621625646885
+LQ 1.1021211823116412
+UQ 2.025440228546051
+IQR 0.9233190462344099
+MAX: 3.410418797897666
+MIN 0.021333803257432504
+Time taken Reading IN (ms):  1094.5525169372559
+Time taken for preprocessing, magnitude and numpy conversion(ms):  22.543907165527344
+Time taken scatter, compute, gather (ms):  124.92203712463379
+Time taken overall (ms):  1242.5482273101807
+Start time and End Time (GMT): 2020-01-02 13:46:45  ,  2020-01-02 16:41:45

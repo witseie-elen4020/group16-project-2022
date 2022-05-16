@@ -67,6 +67,7 @@ def main():
             fileName = sys.argv[1]
             startingRow=0
             endingRow= int(sys.argv[2])+1 
+            print("This is the ending row{}".format(endingRow))
             chunkSize = int((endingRow-startingRow)/numProcesses)
             if chunkSize>20000000: # in order to ensure it fits in RAM
                   chunkSize = 20000000
