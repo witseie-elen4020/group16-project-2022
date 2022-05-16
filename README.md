@@ -23,7 +23,7 @@ In this way mulitple files can be tested at once, as long as the number of overa
 To run your own iteration of file and number of processes, either edit one of the bacth files, or use:
 For main.py:
 
- ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/parrallelimport.py arg1 arg2
+ ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2
 
 where 10 is the number of nodes you wish to run on (this can be changed). arg1 is the complete file path to the csv file you want processed and arg2 is the number of lines of the file you want processed. For a 1GB file, the number of lines is about 15000000. The number of lines and file size are proportional. You can enter a larger number than the file has and it will process the whole file, but if you want a porton of the file, enter a lower number of lines. 
 
@@ -33,7 +33,7 @@ It also produces a .png labeled as the file name that was processed. This png co
 
 For parrallelimport.py:
 
- ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/main.py arg1 arg2
+ ### $ mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py src/parrallelimport.py arg1 arg2
 
  where the arguments are the same as explained for main.py
 
