@@ -1,7 +1,3 @@
-# To run on multiple nodes on cluster:
-#$mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py main.py
-# To run in wsl:
-#$ mpiexec -n 4 python3 -m mpi4py main.py
 import numpy as np
 from mpi4py import MPI
 import sys
@@ -67,7 +63,7 @@ def main():
             pd.set_option('display.float_format', '{:.10f}'.format)
             fileName = sys.argv[1]
             fileSize=os.path.getsize(fileName)
-            bytesPerLine=68.2#71.569728
+            bytesPerLine=68.2
             maxLines=int((fileSize/bytesPerLine)*0.99) #This is to ensure that the number of lines remains within the file size
             startingRow=int(sys.argv[2])+1
             endingRow= int(sys.argv[3])+1

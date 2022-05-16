@@ -101,7 +101,7 @@ def main():
         wt0Start = MPI.Wtime() #begin timing whole code
     fileName = sys.argv[1]   
     fileSize=os.path.getsize(fileName)
-    bytesPerLine=68.2#71.569728
+    bytesPerLine=68.2
     maxLines=int((fileSize/bytesPerLine)*0.70) #This is to ensure that the number of lines remains within the file size
     startingRow=int(sys.argv[2])+1
     endingRow= int(sys.argv[3])+1
