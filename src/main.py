@@ -1,7 +1,3 @@
-# To run on multiple nodes on cluster:
-#$mpiexec -hostfile /home/shared/machinefile -np 10 python3 -m mpi4py main.py
-# To run in wsl:
-#$ mpiexec -n 4 python3 -m mpi4py main.py
 import numpy as np
 from mpi4py import MPI
 import sys
@@ -9,6 +5,7 @@ import random
 import pandas as pd
 import seaborn
 import datetime
+import os
 
 
 comm = MPI.COMM_WORLD
@@ -65,8 +62,15 @@ def main():
             chunkMagList = [] #to store the concantenated df_chunks
             pd.set_option('display.float_format', '{:.10f}'.format)
             fileName = sys.argv[1]
-            startingRow=0
-            endingRow= int(sys.argv[2])+1 
+            fileSize=os.path.getsize(fileName)
+            bytesPerLine=68.2
+            maxLines=int((fileSize/bytesPerLine)*0.99) #This is to ensure that the number of lines remains within the file size
+            startingRow=int(sys.argv[2])+1
+            endingRow= int(sys.argv[3])+1
+            if startingRow>maxLines :
+                  print("Starting row invalid")
+                  exit()    
+            
             chunkSize = int((endingRow-startingRow)/numProcesses)
             if chunkSize>20000000: # in order to ensure it fits in RAM
                   chunkSize = 20000000
